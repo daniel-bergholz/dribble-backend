@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { ApiProperty } from '@nestjs/swagger';
+import { Post } from 'src/modules/posts/entities/post.entity';
 
 @Entity('users')
 export class User {
@@ -20,7 +22,7 @@ export class User {
   @Column()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: null })
   @Column({ default: null })
   bio: string;
 
@@ -31,6 +33,10 @@ export class User {
   @ApiProperty()
   @Column({ select: false })
   password: string;
+
+  @ApiProperty({ type: Post, isArray: true })
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 
   @ApiProperty()
   @CreateDateColumn()
