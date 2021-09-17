@@ -8,27 +8,35 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('users')
 export class User {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty()
   @Column()
   name: string;
 
+  @ApiProperty()
   @Column({ default: null })
   bio: string;
 
+  @ApiProperty()
   @Column({ unique: true })
   email: string;
 
+  @ApiProperty()
   @Column({ select: false })
   password: string;
 
+  @ApiProperty()
   @CreateDateColumn()
   created_at: Date;
 
+  @ApiProperty()
   @UpdateDateColumn()
   updated_at: Date;
 
