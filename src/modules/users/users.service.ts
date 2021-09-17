@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { randomBytes } from 'crypto';
 
 import { IdDto } from '../../shared/dto/id.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,12 +18,6 @@ export class UsersService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
-
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find({
-      order: { created_at: 'DESC' },
-    });
-  }
 
   async findOne(idDto: IdDto): Promise<User> {
     const { id } = idDto;
@@ -91,7 +84,7 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { name, password } = createUserDto;
+    const { name, password, bio } = createUserDto;
     const email = createUserDto.email.toLowerCase();
 
     // check if user exists by the lowercase email
@@ -108,6 +101,7 @@ export class UsersService {
       email,
       name,
       password,
+      bio,
     });
 
     await this.usersRepository.save(user);
@@ -115,50 +109,13 @@ export class UsersService {
     return this.removeUnwantedFields(user);
   }
 
-  async update(idDto: IdDto, updateUserDto: UpdateUserDto): Promise<User> {
-    const { id } = idDto;
+  async remove(req: AuthMiddlewareRequest): Promise<void> {
+    const { user: userFromJwt } = req;
 
     // check if user exists
-    const user = await this.usersRepository.findOne(id);
+    const user = await this.findOne({ id: userFromJwt.id });
 
-    if (!user) {
-      throw new BadRequestException(`O usuário com ID = ${id} não existe`);
-    }
-
-    // enable only name or password update
-    const { name, password } = updateUserDto;
-
-    // error if new fields are empty
-    if (!name && !password) {
-      throw new BadRequestException(
-        `Os campos: name ou password precisam ser enviados no corpo da requisição`,
-      );
-    }
-
-    // update user
-    if (name) {
-      user.name = name;
-    }
-    if (password) {
-      user.password = password;
-    }
-
-    await this.usersRepository.save(user);
-
-    return this.removeUnwantedFields(user);
-  }
-
-  async remove(idDto: IdDto): Promise<void> {
-    const { id } = idDto;
-
-    // check if user exists
-    const user = await this.usersRepository.findOne(id);
-
-    if (!user) {
-      throw new BadRequestException(`O usuário com ID = ${id} não existe`);
-    }
-
-    await this.usersRepository.delete(id);
+    await this.usersRepository.delete(user.id);
   }
 
   // CAUTION: this function returns the user WITH PASSWORD
