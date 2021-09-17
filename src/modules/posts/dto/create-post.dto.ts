@@ -7,7 +7,7 @@ export class CreatePostDto {
   @IsString({ message: 'O campo title deve ser uma string' })
   title: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Esse projeto em fiz em 6 meses usando o reactjs e nextjs...',
   })
   @IsOptional()
