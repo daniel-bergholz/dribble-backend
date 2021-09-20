@@ -34,7 +34,7 @@ export class User {
   @Column({ select: false })
   password: string;
 
-  @ApiProperty({ type: Post, isArray: true })
+  @ApiProperty({ isArray: true, type: () => Post })
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 

@@ -8,5 +8,5 @@ export class LoginSwagger {
   access_token: string;
 
   @ApiProperty({ type: AuthUser })
-  user: User;
+  user: AuthUser;
 }
