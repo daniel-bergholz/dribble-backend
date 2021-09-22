@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { Post } from './entities/post.entity';
 
 @Injectable()
 export class PostsService {
-  create(createPostDto: CreatePostDto) {
+  constructor(
+    @InjectRepository(Post)
+    private usersRepository: Repository<Post>,
+  ) {}
+
+  create(createPostDto: CreatePostDto, file: Express.Multer.File) {
     return 'This action adds a new post';
   }
 

@@ -12,8 +12,4 @@ export class CreatePostDto {
   })
   @IsOptional()
   description: string;
-
-  @ApiProperty({ format: 'binary' })
-  @IsBase64({ message: 'O arquivo precisa estar no formato base64' })
-  file: string;
 }

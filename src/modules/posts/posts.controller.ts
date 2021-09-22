@@ -6,8 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -22,9 +25,13 @@ export class PostsController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  create(
+    @Body() createPostDto: CreatePostDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.postsService.create(createPostDto, file);
   }
 
   @ApiBearerAuth()
