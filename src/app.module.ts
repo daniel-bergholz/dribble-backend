@@ -5,6 +5,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { FileModule } from './modules/file/file.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -13,9 +15,11 @@ import { PostsModule } from './modules/posts/posts.module';
       ttl: 10,
       limit: 6,
     }),
+    ConfigModule.forRoot(),
     AuthModule,
     UsersModule,
     PostsModule,
+    FileModule,
   ],
   providers: [
     {

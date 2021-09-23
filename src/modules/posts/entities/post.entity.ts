@@ -27,6 +27,10 @@ export class Post {
   @Column()
   image_url: string;
 
+  @ApiProperty()
+  @Column()
+  image_id: string;
+
   @ApiProperty({ type: () => User })
   @ManyToOne(() => User, (user) => user.posts)
   user: User;

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { FileService } from '../file/file.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
@@ -9,11 +10,27 @@ import { Post } from './entities/post.entity';
 export class PostsService {
   constructor(
     @InjectRepository(Post)
-    private usersRepository: Repository<Post>,
+    private postsRepository: Repository<Post>,
+    private fileService: FileService,
   ) {}
 
-  create(createPostDto: CreatePostDto, file: Express.Multer.File) {
-    return 'This action adds a new post';
+  async create(createPostDto: CreatePostDto, file: Express.Multer.File) {
+    const { description, title } = createPostDto;
+
+    const base64Image = file.buffer.toString('base64');
+
+    const uploadStr = 'data:image/jpeg;base64,' + base64Image;
+
+    const { url, public_id } = await this.fileService.upload(uploadStr);
+
+    const post = this.postsRepository.create({
+      title,
+      description,
+      image_url: url,
+      image_id: public_id,
+    });
+
+    return this.postsRepository.save(post);
   }
 
   findAll() {
