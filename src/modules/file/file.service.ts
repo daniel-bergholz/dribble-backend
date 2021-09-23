@@ -19,7 +19,6 @@ export class FileService {
           height: 718,
           crop: 'fill',
         },
-        async: true,
       });
       return response;
     } catch {

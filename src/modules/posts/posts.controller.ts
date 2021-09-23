@@ -9,9 +9,12 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Request,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
+import { IdDto } from 'src/shared/dto/id.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 import { CreatePostDto } from './dto/create-post.dto';
@@ -44,21 +47,25 @@ export class PostsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+  findOne(@Param() idDto: IdDto) {
+    return this.postsService.findOne(idDto);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
+  update(
+    @Param() idDto: IdDto,
+    @Body() updatePostDto: UpdatePostDto,
+    @Request() req: AuthMiddlewareRequest,
+  ) {
+    return this.postsService.update(idDto, updatePostDto, req);
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+  remove(@Param() idDto: IdDto, @Request() req: AuthMiddlewareRequest) {
+    return this.postsService.remove(idDto, req);
   }
 }

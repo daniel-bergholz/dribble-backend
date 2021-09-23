@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
+import { IdDto } from 'src/shared/dto/id.dto';
 import { Repository } from 'typeorm';
 import { FileService } from '../file/file.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -21,31 +23,70 @@ export class PostsService {
 
     const uploadStr = 'data:image/jpeg;base64,' + base64Image;
 
-    const { url, public_id } = await this.fileService.upload(uploadStr);
+    const { secure_url, public_id } = await this.fileService.upload(uploadStr);
 
     const post = this.postsRepository.create({
       title,
       description,
-      image_url: url,
+      image_url: secure_url,
       image_id: public_id,
     });
 
     return this.postsRepository.save(post);
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAll() {
+    return this.postsRepository.find({
+      take: 100,
+      order: { created_at: 'DESC' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findOne(idDto: IdDto) {
+    const { id } = idDto;
+
+    const post = await this.postsRepository.findOne(id);
+
+    if (!post) {
+      throw new BadRequestException(`Post de ID = ${id} não encontrado`);
+    }
+
+    return post;
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async findUserPost(idDto: IdDto, req: AuthMiddlewareRequest) {
+    const { user } = req;
+    const { id } = idDto;
+
+    const post = await this.postsRepository.findOne(id, {
+      where: { user: { id: user.id } },
+    });
+
+    if (!post) {
+      throw new BadRequestException(`Post de ID = ${id} não encontrado`);
+    }
+
+    return post;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async update(
+    idDto: IdDto,
+    updatePostDto: UpdatePostDto,
+    req: AuthMiddlewareRequest,
+  ) {
+    const { description, title } = updatePostDto;
+
+    const post = await this.findUserPost(idDto, req);
+
+    if (title) post.title = title;
+    if (description) post.description = description;
+
+    return this.postsRepository.save(post);
+  }
+
+  async remove(idDto: IdDto, req: AuthMiddlewareRequest) {
+    const post = await this.findUserPost(idDto, req);
+
+    await this.postsRepository.remove(post);
   }
 }
