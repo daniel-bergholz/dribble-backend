@@ -32,7 +32,7 @@ export class Post {
   image_id: string;
 
   @ApiProperty({ type: () => User })
-  @ManyToOne(() => User, (user) => user.posts)
+  @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
   user: User;
 
   @ApiProperty()
