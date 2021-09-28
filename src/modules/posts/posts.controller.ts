@@ -28,6 +28,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
 import { CreatePostSwagger } from './swagger/create-post.swagger';
 import { FindAllPostsSwagger } from './swagger/find-all-posts.swagger';
+import { UpdatePostSwagger } from './swagger/update-post.swagger';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -77,8 +78,14 @@ export class PostsController {
     return this.postsService.findOne(idDto);
   }
 
+  @ApiOperation({
+    summary: 'Atualiza um post',
+    description: 'Atualiza um dos seus posts através do ID',
+  })
   @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: UpdatePostSwagger })
   @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'id', type: String })
   @Patch(':id')
   update(
     @Param() idDto: IdDto,
