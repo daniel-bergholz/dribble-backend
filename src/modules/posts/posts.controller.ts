@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
   Request,
   UploadedFile,
   UseGuards,
@@ -84,9 +84,9 @@ export class PostsController {
   })
   @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdatePostSwagger })
-  @UseGuards(JwtAuthGuard)
   @ApiParam({ name: 'id', type: String })
-  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
   update(
     @Param() idDto: IdDto,
     @Body() updatePostDto: UpdatePostDto,
@@ -95,6 +95,11 @@ export class PostsController {
     return this.postsService.update(idDto, updatePostDto, req);
   }
 
+  @ApiOperation({
+    summary: 'Deleta um post',
+    description: 'Deleta um dos seus posts através do ID',
+  })
+  @ApiParam({ name: 'id', type: String })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
