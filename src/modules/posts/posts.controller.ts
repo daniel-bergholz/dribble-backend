@@ -6,26 +6,38 @@ import {
   Param,
   Patch,
   Post,
+  Request,
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  Request,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
 import { IdDto } from 'src/shared/dto/id.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
+import { CreatePostSwagger } from './swagger/create-post.swagger';
 
 @ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @ApiOperation({
+    summary: 'Cria um post',
+    description: 'Cria um post com imagem, título e descrição',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 201, type: CreatePostSwagger })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))

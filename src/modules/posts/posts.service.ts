@@ -17,6 +17,10 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: CreatePostDto, file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('O campo file não pode ser vazio');
+    }
+
     const { description, title } = createPostDto;
 
     const base64Image = file.buffer.toString('base64');

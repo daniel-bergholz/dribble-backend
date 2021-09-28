@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBase64, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
   @ApiProperty({ example: 'Meu portfolio de dev frontend' })
@@ -8,8 +8,12 @@ export class CreatePostDto {
   title: string;
 
   @ApiPropertyOptional({
-    example: 'Esse projeto em fiz em 6 meses usando o reactjs e nextjs...',
+    example: 'Fiz esse projeto em 6 meses usando o nextjs...',
   })
+  @IsString({ message: 'O campo title deve ser uma string' })
   @IsOptional()
   description: string;
+
+  @ApiProperty({ type: 'string', format: 'binary' })
+  file: any;
 }
