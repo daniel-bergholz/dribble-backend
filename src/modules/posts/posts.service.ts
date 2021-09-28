@@ -62,7 +62,9 @@ export class PostsService {
   async findOne(idDto: IdDto) {
     const { id } = idDto;
 
-    const post = await this.postsRepository.findOne(id);
+    const post = await this.postsRepository.findOne(id, {
+      relations: ['user'],
+    });
 
     if (!post) {
       throw new BadRequestException(`Post de ID = ${id} não encontrado`);

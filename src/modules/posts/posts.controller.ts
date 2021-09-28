@@ -16,6 +16,7 @@ import {
   ApiBearerAuth,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -63,6 +64,12 @@ export class PostsController {
     return this.postsService.findAll();
   }
 
+  @ApiOperation({
+    summary: 'Pesquisa um post',
+    description: 'Pesquisa um post através do ID',
+  })
+  @ApiResponse({ status: 200, type: FindAllPostsSwagger })
+  @ApiParam({ name: 'id', type: String })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':id')
