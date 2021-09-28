@@ -1,18 +1,16 @@
+import { ApiProperty } from '@nestjs/swagger';
+import * as bcrypt from 'bcrypt';
+import { Post } from 'src/modules/posts/entities/post.entity';
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
   OneToMany,
-  AfterLoad,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { ApiProperty } from '@nestjs/swagger';
-import { Post } from 'src/modules/posts/entities/post.entity';
-import createSlug from 'src/utils/createSlug';
 
 @Entity('users')
 export class User {
@@ -48,9 +46,6 @@ export class User {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ApiProperty()
-  username: string;
-
   @BeforeUpdate()
   @BeforeInsert()
   async beforeSave() {
@@ -64,13 +59,6 @@ export class User {
 
     if (this?.password) {
       this.password = await bcrypt.hash(this.password, 12);
-    }
-  }
-
-  @AfterLoad()
-  getUsername() {
-    if (this?.username && this?.name) {
-      this.username = createSlug(this.name);
     }
   }
 }
