@@ -26,7 +26,7 @@ export class UsersService {
     const user = await this.usersRepository.findOne(id);
 
     if (!user) {
-      throw new BadRequestException(`Usuário não encontrado`);
+      throw new BadRequestException(`Usuário com ID = ${id} não encontrado`);
     }
 
     return user;

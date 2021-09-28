@@ -4,6 +4,7 @@ import { AuthMiddlewareRequest } from 'src/shared/dto/auth-middleware.dto';
 import { IdDto } from 'src/shared/dto/id.dto';
 import { Repository } from 'typeorm';
 import { FileService } from '../file/file.service';
+import { UsersService } from '../users/users.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
@@ -14,12 +15,22 @@ export class PostsService {
     @InjectRepository(Post)
     private postsRepository: Repository<Post>,
     private fileService: FileService,
+    private usersService: UsersService,
   ) {}
 
-  async create(createPostDto: CreatePostDto, file: Express.Multer.File) {
+  async create(
+    createPostDto: CreatePostDto,
+    req: AuthMiddlewareRequest,
+    file: Express.Multer.File,
+  ) {
     if (!file) {
       throw new BadRequestException('O campo file não pode ser vazio');
     }
+
+    const {
+      user: { id },
+    } = req;
+    const user = await this.usersService.findOne({ id });
 
     const { description, title } = createPostDto;
 
@@ -30,6 +41,7 @@ export class PostsService {
     const { secure_url, public_id } = await this.fileService.upload(uploadStr);
 
     const post = this.postsRepository.create({
+      user,
       title,
       description,
       image_url: secure_url,
@@ -43,6 +55,7 @@ export class PostsService {
     return this.postsRepository.find({
       take: 100,
       order: { created_at: 'DESC' },
+      relations: ['user'],
     });
   }
 

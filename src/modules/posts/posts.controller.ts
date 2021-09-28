@@ -44,9 +44,10 @@ export class PostsController {
   @Post()
   create(
     @Body() createPostDto: CreatePostDto,
+    @Request() req: AuthMiddlewareRequest,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.postsService.create(createPostDto, file);
+    return this.postsService.create(createPostDto, req, file);
   }
 
   @ApiBearerAuth()
