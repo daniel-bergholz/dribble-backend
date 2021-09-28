@@ -26,6 +26,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
 import { CreatePostSwagger } from './swagger/create-post.swagger';
+import { FindAllPostsSwagger } from './swagger/find-all-posts.swagger';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -50,6 +51,11 @@ export class PostsController {
     return this.postsService.create(createPostDto, req, file);
   }
 
+  @ApiOperation({
+    summary: 'Lista os posts',
+    description: 'Lista todos os posts junto com o usuário',
+  })
+  @ApiResponse({ status: 200, type: FindAllPostsSwagger, isArray: true })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
