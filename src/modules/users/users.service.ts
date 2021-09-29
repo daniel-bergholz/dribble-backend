@@ -23,7 +23,9 @@ export class UsersService {
     const { id } = idDto;
 
     // check if user exists
-    const user = await this.usersRepository.findOne(id);
+    const user = await this.usersRepository.findOne(id, {
+      relations: ['posts'],
+    });
 
     if (!user) {
       throw new BadRequestException(`Usuário com ID = ${id} não encontrado`);
