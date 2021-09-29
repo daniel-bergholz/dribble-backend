@@ -9,6 +9,7 @@ import {
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { IdDto } from 'src/shared/dto/id.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { FindAllUsersSwagger } from '../swagger/find-all-users.swagger';
 import { FindOneUserSwagger } from '../swagger/find-one-user.swagger';
 import { UsersService } from '../users.service';
 
@@ -25,6 +26,17 @@ export class UsersController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @ApiOperation({
+    summary: 'Lista todos os usuários',
+  })
+  @ApiResponse({ status: 200, type: FindAllUsersSwagger })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
   }
 
   @ApiOperation({

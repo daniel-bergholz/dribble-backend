@@ -19,6 +19,10 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
+  async findAll() {
+    return this.usersRepository.find();
+  }
+
   async findOne(idDto: IdDto): Promise<User> {
     const { id } = idDto;
 
